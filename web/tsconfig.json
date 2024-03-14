@@ -1,0 +1,10 @@
+{
+  "extends": "@quasar/app-vite/tsconfig-preset",
+  "compilerOptions": {
+    "baseUrl": "."
+  }
+}
+
+// yarn add graphql graphql-tag @apollo/client
+// yarn add @vue/apollo-composable
+// quasar ext add @quasar/apollo

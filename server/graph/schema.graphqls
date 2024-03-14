@@ -1,0 +1,157 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+scalar Time
+
+type Usuario {
+  id: ID!
+  nombres: String!
+  apellido1: String!
+  apellido2: String
+  documento: String
+  celular: String
+  correo: String
+  sexo: String
+  direccion: String
+  username: String!
+  fecha_registro: Time! 
+  fecha_update: Time! 
+  estado: Boolean! 
+} 
+
+type Rol { 
+  nombre: String!
+  descripcion: String
+  jerarquia: Int! 
+  fecha_registro: Time! 
+} 
+
+type Permiso {
+  metodo: String!
+  nombre: String!
+  descripcion: String
+  fecha_registro: Time! 
+}
+
+# =================================
+type ResponseLogin {
+  token: String!
+  refreshToken: String!
+}
+type ResponsePermisoMe {
+  metodo: String!
+  nombre: String!
+  descripcion: String
+  fecha_registro: Time! 
+  fecha_asignado: Time!
+}
+
+type ResponseRolMe { 
+  nombre: String!
+  descripcion: String
+  jerarquia: Int! 
+  fecha_registro: Time!
+  usuario_id: ID!
+  fecha_asignado: Time!
+  permisos: [ResponsePermisoMe]!
+} 
+
+type ResponseMe {
+  usuario: Usuario!
+  roles: [ResponseRolMe]!
+  permisos_sueltos: [ResponsePermisoMe]!
+} 
+
+type ResponseRolCreate {
+  nombre: String!
+  descripcion: String
+  jerarquia: Int! 
+  fecha_registro: Time! 
+  permisos: [ResponsePermisoMe]!
+} 
+# =================================
+
+input QueryUsuarios {
+  rol: ID
+}
+
+# =================================
+input NewLogin {
+  username: String!
+  password: String!
+}
+
+input InputMe{ 
+  show_roles: Boolean!
+  show_permisos: Boolean!
+}
+
+input NewUsuario { 
+  nombres: String!
+  apellido1: String!
+  apellido2: String
+  documento: String
+  celular: String
+  correo: String
+  sexo: String
+  direccion: String
+  username: String!
+  password: String!
+  roles: [String!]!
+  permisos_sueltos: [String!]!
+}
+input UpdateUsuario {
+  id: ID!
+  nombres: String!
+  apellido1: String!
+  apellido2: String
+  documento: String
+  celular: String
+  correo: String
+  sexo: String
+  direccion: String
+  username: String!
+  password: String!
+  roles: [String!]!
+  permisos_sueltos: [String!]!
+}
+
+
+input NewRol {
+  nombre: String!
+  descripcion: String
+  jerarquia: Int = 1
+  permisos: [String!]!
+}
+
+input GetUser { 
+  id: ID!
+  show_roles: Boolean!
+  show_permisos: Boolean!
+}
+
+
+
+# go run github.com/99designs/gqlgen generate
+# CGO_ENABLED=0 go build -ldflags="-s -w" -o auth server.go 
+# scp auth root@8.12.22.222:/root/apps/auth/
+# =================================
+type Query {
+  me(input:InputMe!): ResponseMe!
+  roles(show_permisos:Boolean!): [ResponseRolCreate!]!
+  permisos: [Permiso!]!
+  usuarios(query:QueryUsuarios!): [Usuario!]! 
+  usuarioById(input:GetUser!): ResponseMe!
+  rolById(rol:String!): ResponseRolCreate!
+}
+
+# =================================
+type Mutation {
+  login(input:NewLogin!): ResponseLogin!
+  refreshtoken(token:String!, refreshToken:String!): String!
+  createUsuario(input:NewUsuario!): Usuario!
+  updateUsuario(input:UpdateUsuario!): Usuario!
+  createRol(input:NewRol!): ResponseRolCreate!
+  updateRol(input:NewRol!): ResponseRolCreate!
+}
